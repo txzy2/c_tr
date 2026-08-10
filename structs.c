@@ -26,23 +26,29 @@ struct User *createUser(const char *name, int age) {
 	return u;
 }
 
-bool updateUser(struct User *u, const char *name, const int age) {
+bool updateName(struct User *u, const char *name) {
 	if (name == NULL || name[0] == '\0' || strlen(name) >= 30) {
 		return false;
 	}
 
 	strcpy(u->name, name);
-	u->age = age;
-
 	return true;
 }
 
 int main() {
 
 	struct User *u = createUser("Anton", 25);
-	printf("BASE USER: %s (%d years)\n", u->name, u->age);
-	updateUser(u, "Dima", 21);
-	printf("AFTER EDUT: %s (%d years)\n", u->name, u->age);
+	if (u) {
+		printf("USER: %s (%d years)\n", u->name, u->age);
+		if (updateName(u, "Dima")) {
+			printf("AFTER EDIT: %s (%d years)\n", u->name, u->age);
+			free(u);
+			return 0;
+		}
+
+		printf("ERROR EDIT USER\n");
+		return 0;
+	}
 
 	free(u);
 	return 0;
