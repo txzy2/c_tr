@@ -1,3 +1,4 @@
+#include "arrays.h"
 #include "c_math.h"
 #include "files.h"
 
@@ -8,18 +9,23 @@
 #define FILENAME "data.txt"
 
 int main() {
-  printf("Hello World\n");
+	printf("Hello World\n");
 
-  int8_t a = 5;
-  add_to_int8(&a);
+	int8_t a = 5;
+	add_to_int8(&a);
 
-  printf("%d\n", a);
+	printf("%d\n", a);
 
-  bool isWrited = write_to_file(FILENAME, "HELLO FROM C");
-  if (!isWrited) {
-    return -1;
-  }
+	bool isWrited = write_to_file(FILENAME, "HELLO FROM C");
+	if (!isWrited) {
+		return -1;
+	}
 
-  read_from_file(FILENAME);
-  return 0;
+	read_from_file(FILENAME);
+
+	int nums[] = {1, 2, 3, 4};
+	int length = sizeof(nums) / sizeof(nums[0]);
+	print_array(nums, length);
+
+	return 0;
 }
