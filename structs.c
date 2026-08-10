@@ -33,14 +33,43 @@ bool vector_init(UserVector *uv, size_t capacity) {
 	return true;
 }
 
-void push_back(UserVector *uv, struct User *u) {
-	if (uv->size == uv->capacity) {
-		uv->capacity *= 2;
-		uv->u = realloc(uv->u, uv->capacity * sizeof(struct User *));
+bool push_back(UserVector *uv, struct User *u) {
+	if (uv == NULL || u == NULL) {
+		return false;
 	}
 
-	uv->u[uv->size] = u;
-	uv->size++;
+	if (uv->size == uv->capacity) {
+		size_t new_capacity = uv->capacity * 2;
+
+		// realloc может вернуть NULL.
+		// Используем временный указатель, чтобы не потерять старый блок.
+		//        realloc()
+		//           │
+		//           ▼
+		//        ┌─────┐
+		//        │ tmp │
+		//        └─────┘
+		//           │
+		//  успешно? │
+		//    ┌──────┴──────┐
+		//   YES            NO
+		//    │              │
+		//    ▼              ▼
+		// uv->u=tmp      старый uv->u
+		//               остаётся жив
+		struct User **tmp = realloc(uv->u, new_capacity * sizeof(*uv->u));
+
+		if (tmp == NULL) {
+			return false;
+		}
+
+		uv->u = tmp;
+		uv->capacity = new_capacity;
+	}
+
+	uv->u[uv->size++] = u;
+
+	return true;
 }
 
 void free_vec(UserVector *uv) {
