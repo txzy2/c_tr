@@ -36,12 +36,13 @@ bool updateUser(struct User *u, const char *name, const int age) {
 
 	return true;
 }
+
 int main() {
 
 	struct User *u = createUser("Anton", 25);
-	printf("BASE NAME: %s\n", u->name);
+	printf("BASE USER: %s (%d years)\n", u->name, u->age);
 	updateUser(u, "Dima", 21);
-	printf("AFTER RENAME: %s\n", u->name);
+	printf("AFTER EDUT: %s (%d years)\n", u->name, u->age);
 
 	free(u);
 	return 0;
