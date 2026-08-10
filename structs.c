@@ -11,7 +11,7 @@ struct User {
 };
 
 typedef struct {
-	struct User **u;
+	struct User **u; // array if pointers
 	size_t size;
 	size_t capacity;
 } UserVector;
@@ -90,6 +90,7 @@ int main() {
 		write_to_file(FILENAME, buffer);
 	}
 
+	read_from_file(FILENAME);
 	free_vec(&uv);
 	return 0;
 }

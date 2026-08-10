@@ -11,8 +11,11 @@ void read_from_file(const char *filename) {
 	}
 
 	char file_str[READ_LENGTH];
+	printf("READ FROM FILE (<line-num> <line-data>): \n");
+	int line = 1;
 	while (fgets(file_str, READ_LENGTH, rf)) {
-		printf("READ FROM FILE: %s", file_str);
+		printf("%d %s", line, file_str);
+		line++;
 	}
 
 	fclose(rf);
