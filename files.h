@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define READ_LENGTH 100
+#define FILENAME "data.txt"
 
 bool write_to_file(const char *filename, const char *text);
 void read_from_file(const char *filename);

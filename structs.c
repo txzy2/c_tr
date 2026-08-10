@@ -1,3 +1,4 @@
+#include "files.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -84,8 +85,9 @@ int main() {
 	}
 
 	for (size_t i = 0; i < uv.size; i++) {
-		printf("%p\n", uv.u[i]);
-		printf("%s (%d years)\n", uv.u[i]->name, uv.u[i]->age);
+		char buffer[100];
+		snprintf(buffer, sizeof(buffer), "%s (%d years)", uv.u[i]->name, uv.u[i]->age);
+		write_to_file(FILENAME, buffer);
 	}
 
 	free_vec(&uv);

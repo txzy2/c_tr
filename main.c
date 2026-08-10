@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FILENAME "data.txt"
-
 int main() {
 	printf("Hello World\n");
 
