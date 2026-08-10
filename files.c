@@ -2,6 +2,27 @@
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+size_t readFromFileWithArray(const char *filename, char arr[][30]) {
+	FILE *rf = fopen(filename, "r");
+
+	if (rf == NULL) {
+		return 0;
+	}
+
+	size_t line = 0;
+
+	while (line < 100 && fgets(arr[line], 30, rf)) {
+		arr[line][strcspn(arr[line], "\r\n")] = '\0';
+		line++;
+	}
+
+	fclose(rf);
+
+	return line;
+}
 
 void read_from_file(const char *filename) {
 	FILE *rf = fopen(filename, "r");

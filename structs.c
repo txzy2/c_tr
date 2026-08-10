@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 struct User {
 	char name[30];
-	int8_t age;
+	uint8_t age;
 };
 
 typedef struct {
@@ -16,10 +17,20 @@ typedef struct {
 	size_t capacity;
 } UserVector;
 
-void vector_init(UserVector *uv, size_t capacity) {
-	uv->u = malloc(capacity * sizeof(struct User *));
+bool vector_init(UserVector *uv, size_t capacity) {
+	if (uv == NULL || capacity == 0) {
+		return false;
+	}
+
+	uv->u = malloc(capacity * sizeof(*uv->u));
+	if (uv->u == NULL) {
+		return false;
+	}
+
 	uv->size = 0;
 	uv->capacity = capacity;
+
+	return true;
 }
 
 void push_back(UserVector *uv, struct User *u) {
@@ -42,8 +53,8 @@ void free_vec(UserVector *uv) {
 	uv->capacity = 0;
 }
 
-struct User *createUser(const char *name, int age) {
-	if (name == NULL || name[0] == '\0' || strlen(name) >= 30 || age <= 0 || age > INT8_MAX) {
+struct User *createUser(const char *name, uint8_t age) {
+	if (name == NULL || name[0] == '\0' || strlen(name) >= 30 || age <= 0 || age > UINT8_MAX - 1) {
 		return NULL;
 	}
 
@@ -68,25 +79,53 @@ bool updateName(struct User *u, const char *name) {
 	return true;
 }
 
+bool load_users(UserVector *uv, const char *filename) {
+	FILE *fptr = fopen(filename, "r");
+	if (fptr == NULL) {
+		return false;
+	}
+
+	char buffStr[100];
+	while (fgets(buffStr, 100, fptr)) {
+		char name[30];
+		int age;
+
+		if (sscanf(buffStr, "%29s (%d years)", name, &age) == 2) {
+			struct User *u = createUser(name, age);
+			push_back(uv, u);
+		}
+	}
+
+	fclose(fptr);
+	return true;
+}
+
 int main() {
+	srand(time(0));
+
 	UserVector uv;
 	vector_init(&uv, 1);
 
-	struct User *u = createUser("Anton", 25);
+	load_users(&uv, FILENAME);
+
+	char names[100][30];
+	size_t names_count = readFromFileWithArray(NAMES_FILE, names);
+
+	if (names_count == 0) {
+		free_vec(&uv);
+		return EXIT_FAILURE;
+	}
+
+	int name_index = rand() % names_count;
+	int age = rand() % 100 + 1;
+
+	struct User *u = createUser(names[name_index], age);
 
 	if (u) {
 		push_back(&uv, u);
 
-		if (!updateName(uv.u[0], "Dima")) {
-			free_vec(&uv);
-			printf("ERROR EDIT USER\n");
-			return 0;
-		}
-	}
-
-	for (size_t i = 0; i < uv.size; i++) {
 		char buffer[100];
-		snprintf(buffer, sizeof(buffer), "%s (%d years)", uv.u[i]->name, uv.u[i]->age);
+		snprintf(buffer, sizeof(buffer), "%s (%d years)", u->name, u->age);
 		write_to_file(FILENAME, buffer);
 	}
 
