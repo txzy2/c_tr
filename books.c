@@ -1,27 +1,20 @@
 #include "books.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 #define ARGS_LENGTH 4
 #define BOOK_NAME 1
 #define BOOK_AUTHOR 2
 #define BOOK_YEAR 3
 
-void get_input(int *val)
+void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n3. Find Book\n0. Exit\n==============\n"); }
+
+void read_input(int *input)
 {
-
-	printf("\nINPUT: ");
-	while (scanf("%d", val) != 1)
+	if (scanf("%d", input) != 1)
 	{
-		printf("Ошибка! Вы ввели не число. Попробуйте еще раз: ");
-
-		int c;
-		while ((c = getchar()) != '\n' && c != EOF)
-			;
+		printf("INVALID CHOICE\n");
+		abort();
 	}
 }
-
-void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n3. Find Book\n0. Exit\n==============\n"); }
 
 bool validate_input(const int *input)
 {
@@ -140,14 +133,15 @@ int main(int argc, const char *argv[])
 		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
 	}
 
-	int input = 0;
+	int input;
 	print_menu();
-	get_input(&input);
+	printf("\nINPUT: ");
+	read_input(&input);
 
 	if (!validate_input(&input))
 	{
 		free_vec(&v);
-		return EXIT_FAILURE;
+		abort();
 	}
 
 	free_vec(&v);

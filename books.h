@@ -29,8 +29,8 @@ void free_vec(Vector *v);
 bool push_back(Vector *v, Book *b);
 
 void print_menu();
-void get_input(int *val);
 bool validate_input(const int *input);
+void read_input(int *input);
 
 bool delete_book(Vector *v, int id);
 
