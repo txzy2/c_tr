@@ -68,7 +68,6 @@ bool push_back(UserVector *uv, struct User *u) {
 	}
 
 	uv->u[uv->size++] = u;
-
 	return true;
 }
 
