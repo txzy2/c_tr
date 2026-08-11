@@ -1,4 +1,30 @@
 #ifndef BOOKS_H
 #define BOOKS_H
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct
+{
+	char title[100];
+	char author[50];
+	int year;
+	bool available;
+} Book;
+
+typedef struct
+{
+	Book **b; // array if pointers
+	size_t size;
+	size_t capacity;
+} Vector;
+
+bool vector_init(Vector *v, size_t capacity);
+void free_vec(Vector *v);
+bool push_back(Vector *v, Book *b);
+
 #endif

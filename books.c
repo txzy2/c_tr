@@ -1,30 +1,9 @@
 #include "books.h"
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define ARGS_LENGTH 4
 #define BOOK_NAME 1
 #define BOOK_AUTHOR 2
 #define BOOK_YEAR 3
-
-typedef struct
-{
-	char title[100];
-	char author[50];
-	int year;
-	bool available;
-} Book;
-
-typedef struct
-{
-	Book **b; // array if pointers
-	size_t size;
-	size_t capacity;
-} Vector;
 
 bool vector_init(Vector *v, size_t capacity)
 {

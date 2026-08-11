@@ -6,24 +6,29 @@
 #include <string.h>
 #include <time.h>
 
-struct User {
+struct User
+{
 	char name[30];
 	uint8_t age;
 };
 
-typedef struct {
+typedef struct
+{
 	struct User **u; // array if pointers
 	size_t size;
 	size_t capacity;
 } UserVector;
 
-bool vector_init(UserVector *uv, size_t capacity) {
-	if (uv == NULL || capacity == 0) {
+bool vector_init(UserVector *uv, size_t capacity)
+{
+	if (uv == NULL || capacity == 0)
+	{
 		return false;
 	}
 
 	uv->u = malloc(capacity * sizeof(*uv->u));
-	if (uv->u == NULL) {
+	if (uv->u == NULL)
+	{
 		return false;
 	}
 
@@ -33,12 +38,15 @@ bool vector_init(UserVector *uv, size_t capacity) {
 	return true;
 }
 
-bool push_back(UserVector *uv, struct User *u) {
-	if (uv == NULL || u == NULL) {
+bool push_back(UserVector *uv, struct User *u)
+{
+	if (uv == NULL || u == NULL)
+	{
 		return false;
 	}
 
-	if (uv->size == uv->capacity) {
+	if (uv->size == uv->capacity)
+	{
 		size_t new_capacity = uv->capacity * 2;
 
 		// realloc может вернуть NULL.
@@ -59,7 +67,8 @@ bool push_back(UserVector *uv, struct User *u) {
 		//               остаётся жив
 		struct User **tmp = realloc(uv->u, new_capacity * sizeof(*uv->u));
 
-		if (tmp == NULL) {
+		if (tmp == NULL)
+		{
 			return false;
 		}
 
@@ -71,8 +80,10 @@ bool push_back(UserVector *uv, struct User *u) {
 	return true;
 }
 
-void free_vec(UserVector *uv) {
-	for (size_t i = 0; i < uv->size; i++) {
+void free_vec(UserVector *uv)
+{
+	for (size_t i = 0; i < uv->size; i++)
+	{
 		free(uv->u[i]);
 	}
 	free(uv->u);
@@ -81,14 +92,17 @@ void free_vec(UserVector *uv) {
 	uv->capacity = 0;
 }
 
-struct User *createUser(const char *name, uint8_t age) {
-	if (name == NULL || name[0] == '\0' || strlen(name) >= 30 || age <= 0 || age > UINT8_MAX - 1) {
+struct User *createUser(const char *name, uint8_t age)
+{
+	if (name == NULL || name[0] == '\0' || strlen(name) >= 30 || age <= 0 || age > UINT8_MAX - 1)
+	{
 		return NULL;
 	}
 
 	struct User *u = malloc(sizeof(struct User));
 
-	if (u == NULL) {
+	if (u == NULL)
+	{
 		return NULL;
 	}
 
@@ -98,8 +112,10 @@ struct User *createUser(const char *name, uint8_t age) {
 	return u;
 }
 
-bool updateName(struct User *u, const char *name) {
-	if (name == NULL || name[0] == '\0' || strlen(name) >= 30) {
+bool updateName(struct User *u, const char *name)
+{
+	if (name == NULL || name[0] == '\0' || strlen(name) >= 30)
+	{
 		return false;
 	}
 
@@ -107,18 +123,22 @@ bool updateName(struct User *u, const char *name) {
 	return true;
 }
 
-bool load_users(UserVector *uv, const char *filename) {
+bool load_users(UserVector *uv, const char *filename)
+{
 	FILE *fptr = fopen(filename, "r");
-	if (fptr == NULL) {
+	if (fptr == NULL)
+	{
 		return false;
 	}
 
 	char buffStr[100];
-	while (fgets(buffStr, 100, fptr)) {
+	while (fgets(buffStr, 100, fptr))
+	{
 		char name[30];
 		int age;
 
-		if (sscanf(buffStr, "%29s (%d years)", name, &age) == 2) {
+		if (sscanf(buffStr, "%29s (%d years)", name, &age) == 2)
+		{
 			struct User *u = createUser(name, age);
 			push_back(uv, u);
 		}
@@ -128,7 +148,8 @@ bool load_users(UserVector *uv, const char *filename) {
 	return true;
 }
 
-int main() {
+int main()
+{
 	srand(time(0));
 
 	UserVector uv;
@@ -139,7 +160,8 @@ int main() {
 	char names[100][30];
 	size_t names_count = readFromFileWithArray(NAMES_FILE, names);
 
-	if (names_count == 0) {
+	if (names_count == 0)
+	{
 		free_vec(&uv);
 		return EXIT_FAILURE;
 	}
@@ -149,7 +171,8 @@ int main() {
 
 	struct User *u = createUser(names[name_index], age);
 
-	if (u) {
+	if (u)
+	{
 		push_back(&uv, u);
 
 		char buffer[100];
