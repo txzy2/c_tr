@@ -10,6 +10,7 @@
 
 typedef struct
 {
+	int id;
 	char title[100];
 	char author[50];
 	int year;
@@ -26,5 +27,11 @@ typedef struct
 bool vector_init(Vector *v, size_t capacity);
 void free_vec(Vector *v);
 bool push_back(Vector *v, Book *b);
+
+void print_menu();
+void get_input(int *val);
+bool validate_input(const int *input);
+
+bool delete_book(Vector *v, int id);
 
 #endif

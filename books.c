@@ -1,9 +1,45 @@
 #include "books.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define ARGS_LENGTH 4
 #define BOOK_NAME 1
 #define BOOK_AUTHOR 2
 #define BOOK_YEAR 3
+
+void get_input(int *val)
+{
+
+	printf("\nINPUT: ");
+	while (scanf("%d", val) != 1)
+	{
+		printf("Ошибка! Вы ввели не число. Попробуйте еще раз: ");
+
+		int c;
+		while ((c = getchar()) != '\n' && c != EOF)
+			;
+	}
+}
+
+void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n3. Find Book\n0. Exit\n==============\n"); }
+
+bool validate_input(const int *input)
+{
+	switch (*input)
+	{
+	case 1:
+		printf("%d", *input);
+		break;
+	case 0:
+		printf("BYE!\n");
+		return EXIT_SUCCESS;
+	default:
+		printf("UNDEFINED CHOICE\n");
+		break;
+	}
+
+	return EXIT_SUCCESS;
+}
 
 bool vector_init(Vector *v, size_t capacity)
 {
@@ -79,6 +115,7 @@ int main(int argc, const char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	b->id = v.size + 1;
 	strcpy(b->title, argv[BOOK_NAME]);
 	strcpy(b->author, argv[BOOK_AUTHOR]);
 	b->available = true;
@@ -100,7 +137,17 @@ int main(int argc, const char *argv[])
 
 	for (size_t i = 0; i < v.size; ++i)
 	{
-		printf("TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->title, v.b[i]->author, v.b[i]->year);
+		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
+	}
+
+	int input = 0;
+	print_menu();
+	get_input(&input);
+
+	if (!validate_input(&input))
+	{
+		free_vec(&v);
+		return EXIT_FAILURE;
 	}
 
 	free_vec(&v);
