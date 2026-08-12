@@ -1,4 +1,5 @@
 #include "books.h"
+#include <stdlib.h>
 
 #define ARGS_LENGTH 4
 #define BOOK_NAME 1
@@ -96,7 +97,7 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 	unsigned long year = strtoul(argv[2], &end, 10);
 	if (*end != '\0')
 	{
-		printf("Invalid year\n");
+		fprintf(stderr, "Invalid year\n");
 		abort();
 	}
 	b->year = (uint16_t)year;
@@ -122,7 +123,11 @@ bool validate_input(const int *input, Vector *v)
 		Book *b = malloc(sizeof(Book));
 		const char *arr[] = {title, author, year};
 		create_book_data(b, arr, v->size);
-		push_back(v, b);
+		if (!push_back(v, b))
+		{
+			free_vec(v);
+			abort();
+		}
 
 		break;
 	}
@@ -136,6 +141,14 @@ bool validate_input(const int *input, Vector *v)
 	}
 
 	return EXIT_SUCCESS;
+}
+
+void print_data_to_console(const Vector *v)
+{
+	for (size_t i = 0; i < v->size; ++i)
+	{
+		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v->b[i]->id, v->b[i]->title, v->b[i]->author, v->b[i]->year);
+	}
 }
 
 int main(int argc, const char *argv[])
@@ -156,10 +169,7 @@ int main(int argc, const char *argv[])
 	create_book_data(b, params, v.size);
 	if (push_back(&v, b))
 	{
-		for (size_t i = 0; i < v.size; ++i)
-		{
-			printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
-		}
+		print_data_to_console(&v);
 
 		print_menu();
 		printf("\nINPUT: ");
@@ -172,10 +182,7 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-	for (size_t i = 0; i < v.size; ++i)
-	{
-		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
-	}
+	print_data_to_console(&v);
 
 	free_vec(&v);
 	return EXIT_SUCCESS;
