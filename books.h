@@ -1,6 +1,8 @@
 #ifndef BOOKS_H
 #define BOOKS_H
 
+#include "files.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -33,5 +35,7 @@ bool validate_input(const int *input, Vector *v);
 void read_input(int *input);
 
 bool delete_book(Vector *v, int id);
+
+bool move_into_storage(Book *b);
 
 #endif

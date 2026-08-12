@@ -7,4 +7,4 @@ b-structs:
 	gcc -Wall -Wextra -std=c17 -o bin/structs structs.c files.c
 
 b-book:
-	gcc -std=c17 -o bin/books books.c
+	gcc -std=c17 -o bin/books books.c files.c

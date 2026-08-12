@@ -1,4 +1,6 @@
 #include "books.h"
+#include "files.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define ARGS_LENGTH 4
@@ -77,7 +79,35 @@ void free_vec(Vector *v)
 	v->capacity = 0;
 }
 
-void create_book_data(Book *b, const char *argv[], const int v_size)
+bool delete_book(Vector *v, int id)
+{
+	if (v == NULL || v->b == NULL || v->size == 0)
+	{
+		abort();
+	}
+
+	for (size_t i = 0; i < v->size; i++)
+	{
+		if (v->b[i]->id == id)
+		{
+			free(v->b[i]);
+
+			for (size_t j = 0; j < v->size - 1; ++j)
+			{
+				v->b[j] = v->b[j + 1];
+			}
+
+			v->size--;
+			v->b[v->size] = NULL;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void create_book_data(Book *b, const char *argv[])
 {
 	if (b == NULL)
 	{
@@ -85,16 +115,16 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 		abort();
 	}
 
-	b->id = v_size + 1;
-	strcpy(b->title, argv[0]);
-	strcpy(b->author, argv[1]);
-	b->available = true;
+	int id;
+	scanf("") b->id = argv[0];
+	strcpy(b->title, argv[1]);
+	strcpy(b->author, argv[2]);
 
 	// =====
 	// Возьми строку из argv[BOOK_YEAR], интерпретируй её как десятичное число, результат положи в year, а указатель на
 	// место остановки преобразования положи в end.
 	char *end;
-	unsigned long year = strtoul(argv[2], &end, 10);
+	unsigned long year = strtoul(argv[3], &end, 10);
 	if (*end != '\0')
 	{
 		fprintf(stderr, "Invalid year\n");
@@ -102,6 +132,7 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 	}
 	b->year = (uint16_t)year;
 	// =====
+	b->available = argv[4];
 }
 
 bool validate_input(const int *input, Vector *v)
@@ -131,6 +162,24 @@ bool validate_input(const int *input, Vector *v)
 
 		break;
 	}
+	case 2:
+	{
+		int id;
+		printf("Paste ID: ");
+
+		if (scanf("%d", &id) != 1)
+		{
+			fprintf(stderr, "INVALID ID\n");
+			abort();
+		}
+
+		if (!delete_book(v, id))
+		{
+			fprintf(stderr, "ERROR TO DELETE BOOK\n");
+			abort();
+		}
+		break;
+	}
 	case 0:
 		printf("BYE!\n");
 		break;
@@ -151,35 +200,71 @@ void print_data_to_console(const Vector *v)
 	}
 }
 
-int main(int argc, const char *argv[])
+bool move_into_storage(Book *b)
 {
-	if (argc != ARGS_LENGTH)
+	char buffer[100];
+	int res = snprintf(buffer, sizeof(buffer), "%d;%s;%s;%d;%d\n", b->id, b->title, b->author, b->year, b->available);
+
+	if (res < 0 || res >= sizeof(buffer))
 	{
-		printf("No command-line arguments passed. (<book-name> <author-name> <year>)\n");
-		return EXIT_FAILURE;
+		return false;
 	}
+
+	write_to_file(BOOK_STORAGE_FILENAME, buffer);
+	return true;
+}
+
+bool load_storage(Vector *v)
+{
+	FILE *fptr = fopen(BOOK_STORAGE_FILENAME, "r");
+	if (fptr == NULL)
+	{
+		return false;
+	}
+
+	char buffStr[100];
+	while (fgets(buffStr, 100, fptr))
+	{
+		int id, year;
+		char title[100];
+		char author[50];
+		char available;
+
+		char buffStr[100];
+
+		if (sscanf(buffStr, "%s;%99s;%49s;%3s;%s", id, title, author, year, available) == 5)
+		{
+			Book *b = malloc(sizeof(Book));
+
+			const char *arr[] = {id, title, author, year, available};
+			create_book_data(b);
+		}
+	}
+
+	fclose(fptr);
+	return true;
+}
+
+int main()
+{
 
 	Vector v;
 	int input;
-	Book *b = malloc(sizeof(Book));
 
 	vector_init(&v, 1);
 
-	const char *params[] = {argv[BOOK_NAME], argv[BOOK_AUTHOR], argv[BOOK_YEAR]};
-	create_book_data(b, params, v.size);
-	if (push_back(&v, b))
+	// TODO: Добавить инициализацию
+
+	print_data_to_console(&v);
+
+	print_menu();
+	printf("\nINPUT: ");
+	read_input(&input);
+
+	if (validate_input(&input, &v))
 	{
-		print_data_to_console(&v);
-
-		print_menu();
-		printf("\nINPUT: ");
-		read_input(&input);
-
-		if (validate_input(&input, &v))
-		{
-			free_vec(&v);
-			abort();
-		}
+		free_vec(&v);
+		abort();
 	}
 
 	print_data_to_console(&v);
