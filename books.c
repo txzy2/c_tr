@@ -81,14 +81,15 @@ bool push_back(Vector *v, Book *b)
 
 void free_vec(Vector *v)
 {
-	for (size_t i = 0; i < v->size; i++)
+	if (v->b != NULL)
 	{
-		if (v->b != NULL)
+		for (size_t i = 0; i < v->size; i++)
 		{
 			free(v->b[i]);
 		}
+
+		free(v->b);
 	}
-	free(v->b);
 	v->b = NULL;
 	v->size = 0;
 	v->capacity = 0;
