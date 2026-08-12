@@ -16,25 +16,6 @@ void read_input(int *input)
 	}
 }
 
-bool validate_input(const int *input)
-{
-	switch (*input)
-	{
-	case 1:
-		printf("%d", *input);
-		break;
-	case 0:
-		printf("BYE!\n");
-		break;
-	default:
-		printf("UNDEFINED CHOICE\n");
-		return EXIT_FAILURE;
-		break;
-	}
-
-	return EXIT_SUCCESS;
-}
-
 bool vector_init(Vector *v, size_t capacity)
 {
 	if (v == NULL || capacity == 0)
@@ -104,15 +85,15 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 	}
 
 	b->id = v_size + 1;
-	strcpy(b->title, argv[BOOK_NAME]);
-	strcpy(b->author, argv[BOOK_AUTHOR]);
+	strcpy(b->title, argv[0]);
+	strcpy(b->author, argv[1]);
 	b->available = true;
 
 	// =====
 	// Возьми строку из argv[BOOK_YEAR], интерпретируй её как десятичное число, результат положи в year, а указатель на
 	// место остановки преобразования положи в end.
 	char *end;
-	unsigned long year = strtoul(argv[BOOK_YEAR], &end, 10);
+	unsigned long year = strtoul(argv[2], &end, 10);
 	if (*end != '\0')
 	{
 		printf("Invalid year\n");
@@ -120,6 +101,41 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 	}
 	b->year = (uint16_t)year;
 	// =====
+}
+
+bool validate_input(const int *input, Vector *v)
+{
+	switch (*input)
+	{
+	case 1:
+	{
+		char title[100];
+		char author[50];
+		char year[5];
+		printf("Paste <book-title> <author> <year>: ");
+		if (scanf("%99s %49s %4s", title, author, year) != 3)
+		{
+			fprintf(stderr, "INVALID INPUT\n");
+			abort();
+		}
+
+		Book *b = malloc(sizeof(Book));
+		const char *arr[] = {title, author, year};
+		create_book_data(b, arr, v->size);
+		push_back(v, b);
+
+		break;
+	}
+	case 0:
+		printf("BYE!\n");
+		break;
+	default:
+		printf("UNDEFINED CHOICE\n");
+		return EXIT_FAILURE;
+		break;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 int main(int argc, const char *argv[])
@@ -136,7 +152,8 @@ int main(int argc, const char *argv[])
 
 	vector_init(&v, 1);
 
-	create_book_data(b, argv, v.size);
+	const char *params[] = {argv[BOOK_NAME], argv[BOOK_AUTHOR], argv[BOOK_YEAR]};
+	create_book_data(b, params, v.size);
 	if (push_back(&v, b))
 	{
 		for (size_t i = 0; i < v.size; ++i)
@@ -148,11 +165,16 @@ int main(int argc, const char *argv[])
 		printf("\nINPUT: ");
 		read_input(&input);
 
-		if (validate_input(&input))
+		if (validate_input(&input, &v))
 		{
 			free_vec(&v);
 			abort();
 		}
+	}
+
+	for (size_t i = 0; i < v.size; ++i)
+	{
+		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
 	}
 
 	free_vec(&v);

@@ -29,7 +29,7 @@ void free_vec(Vector *v);
 bool push_back(Vector *v, Book *b);
 
 void print_menu();
-bool validate_input(const int *input);
+bool validate_input(const int *input, Vector *v);
 void read_input(int *input);
 
 bool delete_book(Vector *v, int id);
