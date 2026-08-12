@@ -25,9 +25,10 @@ bool validate_input(const int *input)
 		break;
 	case 0:
 		printf("BYE!\n");
-		return EXIT_SUCCESS;
+		break;
 	default:
 		printf("UNDEFINED CHOICE\n");
+		return EXIT_FAILURE;
 		break;
 	}
 
@@ -90,25 +91,15 @@ void free_vec(Vector *v)
 	v->capacity = 0;
 }
 
-int main(int argc, const char *argv[])
+void create_book_data(Book *b, const char *argv[], const int v_size)
 {
-	Vector v;
-	vector_init(&v, 1);
-
-	if (argc != ARGS_LENGTH)
-	{
-		printf("No command-line arguments passed. (<book-name> <author-name> <year>)\n");
-		return EXIT_FAILURE;
-	}
-
-	Book *b = malloc(sizeof(Book));
 	if (b == NULL)
 	{
 		printf("ERROR CREATE BOOK");
-		return EXIT_FAILURE;
+		abort();
 	}
 
-	b->id = v.size + 1;
+	b->id = v_size + 1;
 	strcpy(b->title, argv[BOOK_NAME]);
 	strcpy(b->author, argv[BOOK_AUTHOR]);
 	b->available = true;
@@ -121,11 +112,25 @@ int main(int argc, const char *argv[])
 	if (*end != '\0')
 	{
 		printf("Invalid year\n");
-		return EXIT_FAILURE;
+		abort();
 	}
 	b->year = (uint16_t)year;
 	// =====
+}
 
+int main(int argc, const char *argv[])
+{
+	Vector v;
+	vector_init(&v, 1);
+
+	if (argc != ARGS_LENGTH)
+	{
+		printf("No command-line arguments passed. (<book-name> <author-name> <year>)\n");
+		return EXIT_FAILURE;
+	}
+
+	Book *b = malloc(sizeof(Book));
+	create_book_data(b, argv, v.size);
 	push_back(&v, b);
 
 	for (size_t i = 0; i < v.size; ++i)
@@ -138,7 +143,7 @@ int main(int argc, const char *argv[])
 	printf("\nINPUT: ");
 	read_input(&input);
 
-	if (!validate_input(&input))
+	if (validate_input(&input))
 	{
 		free_vec(&v);
 		abort();
