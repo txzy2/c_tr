@@ -83,7 +83,10 @@ void free_vec(Vector *v)
 {
 	for (size_t i = 0; i < v->size; i++)
 	{
-		free(v->b[i]);
+		if (v->b != NULL)
+		{
+			free(v->b[i]);
+		}
 	}
 	free(v->b);
 	v->b = NULL;
@@ -120,33 +123,35 @@ void create_book_data(Book *b, const char *argv[], const int v_size)
 
 int main(int argc, const char *argv[])
 {
-	Vector v;
-	vector_init(&v, 1);
-
 	if (argc != ARGS_LENGTH)
 	{
 		printf("No command-line arguments passed. (<book-name> <author-name> <year>)\n");
 		return EXIT_FAILURE;
 	}
 
-	Book *b = malloc(sizeof(Book));
-	create_book_data(b, argv, v.size);
-	push_back(&v, b);
-
-	for (size_t i = 0; i < v.size; ++i)
-	{
-		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
-	}
-
+	Vector v;
 	int input;
-	print_menu();
-	printf("\nINPUT: ");
-	read_input(&input);
+	Book *b = malloc(sizeof(Book));
 
-	if (validate_input(&input))
+	vector_init(&v, 1);
+
+	create_book_data(b, argv, v.size);
+	if (push_back(&v, b))
 	{
-		free_vec(&v);
-		abort();
+		for (size_t i = 0; i < v.size; ++i)
+		{
+			printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v.b[i]->id, v.b[i]->title, v.b[i]->author, v.b[i]->year);
+		}
+
+		print_menu();
+		printf("\nINPUT: ");
+		read_input(&input);
+
+		if (validate_input(&input))
+		{
+			free_vec(&v);
+			abort();
+		}
 	}
 
 	free_vec(&v);
