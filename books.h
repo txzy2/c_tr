@@ -117,6 +117,18 @@ bool read_input(int *input);
 bool delete_book(Vector *v, int id);
 
 /**
+ * @brief Создаёт книгу с указанными полями.
+ *
+ * @param id        Идентификатор книги.
+ * @param title     Название книги.
+ * @param author    Имя автора.
+ * @param year      Год издания.
+ * @param available Доступность книги.
+ * @return Указатель на созданную книгу или NULL при ошибке выделения памяти.
+ */
+Book *create_book(int id, const char *title, const char *author, int year, bool available);
+
+/**
  * @brief Записывает данные книги в файл хранилища.
  *
  * Формат строки: id;title;author;year;available

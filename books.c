@@ -1,8 +1,6 @@
 #include "books.h"
 #include "files.h"
 
-#define ARGS_LENGTH 4
-
 void print_data_to_console(const Vector *v)
 {
 	for (size_t i = 0; i < v->size; ++i)
@@ -124,36 +122,26 @@ bool delete_book(Vector *v, int id)
 	return false;
 }
 
-void create_book_data(Book *b, const char *argv[])
+Book *create_book(int id, const char *title, const char *author, int year, bool available)
 {
+	Book *b = malloc(sizeof(Book));
 	if (b == NULL)
 	{
-		fprintf(stderr, "ERROR CREATE BOOK\n");
-		abort();
+		return NULL;
 	}
 
-	char *end;
-	unsigned long id_val = strtoul(argv[0], &end, 10);
-	if (*end != '\0')
-	{
-		fprintf(stderr, "Invalid id\n");
-		abort();
-	}
-	b->id = (int)id_val;
+	b->id = id;
 
-	strcpy(b->title, argv[1]);
-	strcpy(b->author, argv[2]);
+	strncpy(b->title, title, sizeof(b->title) - 1);
+	b->title[sizeof(b->title) - 1] = '\0';
 
-	char *end_year;
-	unsigned long year = strtoul(argv[3], &end_year, 10);
-	if (*end_year != '\0')
-	{
-		fprintf(stderr, "Invalid year\n");
-		abort();
-	}
-	b->year = (uint16_t)year;
+	strncpy(b->author, author, sizeof(b->author) - 1);
+	b->author[sizeof(b->author) - 1] = '\0';
 
-	b->available = argv[4];
+	b->year = year;
+	b->available = available;
+
+	return b;
 }
 
 bool validate_input(const int *input, Vector *v)
@@ -162,10 +150,10 @@ bool validate_input(const int *input, Vector *v)
 	{
 	case 1:
 	{
-		char title[100], author[50], year[5];
+		char title[100], author[50], year_str[5];
 
 		printf("Paste <book-title> <author> <year>: ");
-		if (scanf("%99s %49s %4s", title, author, year) != 3)
+		if (scanf("%99s %49s %4s", title, author, year_str) != 3)
 		{
 			fprintf(stderr, "INVALID INPUT\n");
 			return EXIT_FAILURE;
@@ -177,32 +165,30 @@ bool validate_input(const int *input, Vector *v)
 			return EXIT_FAILURE;
 		}
 
-		Book *b = malloc(sizeof(Book));
+		char *end;
+		unsigned long year = strtoul(year_str, &end, 10);
+		if (*end != '\0' || year > UINT16_MAX)
+		{
+			fprintf(stderr, "Invalid year\n");
+			return EXIT_FAILURE;
+		}
+
+		int id = (v->size > 0) ? v->b[v->size - 1]->id + 1 : 1;
+		Book *b = create_book(id, title, author, (int)year, true);
 		if (b == NULL)
 		{
 			fprintf(stderr, "Memory allocation failed\n");
 			return EXIT_FAILURE;
 		}
 
-		int id_int = (v->size > 0) ? v->b[v->size - 1]->id + 1 : 1;
-		int length = snprintf(NULL, 0, "%d", id_int);
-		char *id = malloc(length + 1);
-		snprintf(id, length + 1, "%d", id_int);
-
-		const char *arr[] = {id, title, author, year, "1"};
-		create_book_data(b, arr);
-
 		if (!push_back(v, b))
 		{
-			free(id);
 			free(b);
 			fprintf(stderr, "Failed to add book\n");
 			return EXIT_FAILURE;
 		}
 
 		move_into_storage(b, "a");
-
-		free(id);
 		break;
 	}
 	case 2:
@@ -259,19 +245,21 @@ bool load_storage(Vector *v)
 	char buffStr[256];
 	while (fgets(buffStr, sizeof(buffStr), fptr))
 	{
-		char id[20], title[100], author[50], year[10], available[10];
+		char id_str[20], title[100], author[50], year_str[10], avail_str[10];
 
-		if (sscanf(buffStr, "%19[^;];%99[^;];%49[^;];%9[^;];%9[^;\n]", id, title, author, year, available) == 5)
+		if (sscanf(buffStr, "%19[^;];%99[^;];%49[^;];%9[^;];%9[^;\n]", id_str, title, author, year_str, avail_str) == 5)
 		{
-			Book *b = malloc(sizeof(Book));
+			int id = atoi(id_str);
+			int year = atoi(year_str);
+			bool available = atoi(avail_str);
+
+			Book *b = create_book(id, title, author, year, available);
 			if (b == NULL)
 			{
 				fprintf(stderr, "Memory allocation failed\n");
 				continue;
 			}
 
-			const char *arr[] = {id, title, author, year, available};
-			create_book_data(b, arr);
 			if (!push_back(v, b))
 			{
 				free(b);
