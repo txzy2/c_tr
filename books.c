@@ -1,13 +1,7 @@
 #include "books.h"
 #include "files.h"
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #define ARGS_LENGTH 4
-#define BOOK_NAME 1
-#define BOOK_AUTHOR 2
-#define BOOK_YEAR 3
 
 void print_data_to_console(const Vector *v)
 {
@@ -17,7 +11,7 @@ void print_data_to_console(const Vector *v)
 	}
 }
 
-void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n3. Find Book\n0. Exit\n==============\n"); }
+void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n0. Exit\n==============\n"); }
 
 void read_input(int *input)
 {
@@ -160,9 +154,8 @@ bool validate_input(const int *input, Vector *v)
 	{
 	case 1:
 	{
-		char title[100];
-		char author[50];
-		char year[5];
+		char title[100], author[50], year[5];
+
 		printf("Paste <book-title> <author> <year>: ");
 		if (scanf("%99s %49s %4s", title, author, year) != 3)
 		{
