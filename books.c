@@ -115,8 +115,7 @@ void create_book_data(Book *b, const char *argv[])
 		abort();
 	}
 
-	int id;
-	scanf("") b->id = argv[0];
+	b->id = atoi(argv[0]);
 	strcpy(b->title, argv[1]);
 	strcpy(b->author, argv[2]);
 
@@ -152,14 +151,25 @@ bool validate_input(const int *input, Vector *v)
 		}
 
 		Book *b = malloc(sizeof(Book));
-		const char *arr[] = {title, author, year};
-		create_book_data(b, arr, v->size);
+
+		int id_int = v->size + 1;
+		int length = snprintf(NULL, 0, "%d", id_int);
+		char *id = malloc(length + 1);
+		snprintf(id, length + 1, "%d", id_int);
+
+		const char *arr[] = {id, title, author, year, "1"};
+		create_book_data(b, arr);
+
 		if (!push_back(v, b))
 		{
+			free(id);
 			free_vec(v);
 			abort();
 		}
 
+		move_into_storage(b);
+
+		free(id);
 		break;
 	}
 	case 2:
@@ -203,7 +213,7 @@ void print_data_to_console(const Vector *v)
 bool move_into_storage(Book *b)
 {
 	char buffer[100];
-	int res = snprintf(buffer, sizeof(buffer), "%d;%s;%s;%d;%d\n", b->id, b->title, b->author, b->year, b->available);
+	int res = snprintf(buffer, sizeof(buffer), "%d;%s;%s;%d;%d", b->id, b->title, b->author, b->year, b->available);
 
 	if (res < 0 || res >= sizeof(buffer))
 	{
@@ -222,39 +232,36 @@ bool load_storage(Vector *v)
 		return false;
 	}
 
-	char buffStr[100];
-	while (fgets(buffStr, 100, fptr))
+	char buffStr[256];
+	while (fgets(buffStr, sizeof(buffStr), fptr))
 	{
-		int id, year;
-		char title[100];
-		char author[50];
-		char available;
+		char id[20], title[100], author[50], year[10], available[10];
 
-		char buffStr[100];
-
-		if (sscanf(buffStr, "%s;%99s;%49s;%3s;%s", id, title, author, year, available) == 5)
+		if (sscanf(buffStr, "%19[^;];%99[^;];%49[^;];%9[^;];%9[^;\n]", id, title, author, year, available) == 5)
 		{
 			Book *b = malloc(sizeof(Book));
+			if (b == NULL)
+			{
+				fprintf(stderr, "Memory allocation failed\n");
+				continue;
+			}
 
 			const char *arr[] = {id, title, author, year, available};
-			create_book_data(b);
+			create_book_data(b, arr);
+			push_back(v, b);
 		}
 	}
-
 	fclose(fptr);
 	return true;
 }
 
 int main()
 {
-
 	Vector v;
 	int input;
 
 	vector_init(&v, 1);
-
-	// TODO: Добавить инициализацию
-
+	load_storage(&v);
 	print_data_to_console(&v);
 
 	print_menu();

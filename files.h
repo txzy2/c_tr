@@ -8,7 +8,7 @@
 #define READ_LENGTH 100
 #define FILENAME "./storage/data.txt"
 #define NAMES_FILE "./storage/names.txt"
-#define BOOK_STORAGE_FILENAME "./storage/books.txt"
+#define BOOK_STORAGE_FILENAME "./storage/books.csv"
 
 bool write_to_file(const char *filename, const char *text);
 size_t readFromFileWithArray(const char *filename, char arr[][30]);

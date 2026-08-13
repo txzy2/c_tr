@@ -5,16 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-size_t readFromFileWithArray(const char *filename, char arr[][30]) {
+size_t readFromFileWithArray(const char *filename, char arr[][30])
+{
 	FILE *rf = fopen(filename, "r");
 
-	if (rf == NULL) {
+	if (rf == NULL)
+	{
 		return 0;
 	}
 
 	size_t line = 0;
 
-	while (line < 100 && fgets(arr[line], 30, rf)) {
+	while (line < 100 && fgets(arr[line], 30, rf))
+	{
 		arr[line][strcspn(arr[line], "\r\n")] = '\0';
 		line++;
 	}
@@ -24,17 +27,20 @@ size_t readFromFileWithArray(const char *filename, char arr[][30]) {
 	return line;
 }
 
-void read_from_file(const char *filename) {
+void read_from_file(const char *filename)
+{
 	FILE *rf = fopen(filename, "r");
 
-	if (rf == NULL) {
+	if (rf == NULL)
+	{
 		return;
 	}
 
 	char file_str[READ_LENGTH];
 	printf("READ FROM FILE (<line-num> <line-data>): \n");
 	int line = 1;
-	while (fgets(file_str, READ_LENGTH, rf)) {
+	while (fgets(file_str, READ_LENGTH, rf))
+	{
 		printf("%d %s", line, file_str);
 		line++;
 	}
@@ -42,9 +48,11 @@ void read_from_file(const char *filename) {
 	fclose(rf);
 }
 
-bool write_to_file(const char *filename, const char *text) {
+bool write_to_file(const char *filename, const char *text)
+{
 	FILE *f = fopen(filename, "a");
-	if (f == NULL) {
+	if (f == NULL)
+	{
 		return false;
 	}
 
