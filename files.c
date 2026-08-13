@@ -48,9 +48,9 @@ void read_from_file(const char *filename)
 	fclose(rf);
 }
 
-bool write_to_file(const char *filename, const char *text)
+bool write_to_file(const char *filename, const char *text, const char *mode)
 {
-	FILE *f = fopen(filename, "a");
+	FILE *f = fopen(filename, mode);
 	if (f == NULL)
 	{
 		return false;

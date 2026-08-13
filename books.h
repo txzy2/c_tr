@@ -36,6 +36,6 @@ void read_input(int *input);
 
 bool delete_book(Vector *v, int id);
 
-bool move_into_storage(Book *b);
+bool move_into_storage(Book *b, const char *mode);
 
 #endif

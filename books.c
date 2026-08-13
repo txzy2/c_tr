@@ -1,5 +1,6 @@
 #include "books.h"
 #include "files.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,6 +8,14 @@
 #define BOOK_NAME 1
 #define BOOK_AUTHOR 2
 #define BOOK_YEAR 3
+
+void print_data_to_console(const Vector *v)
+{
+	for (size_t i = 0; i < v->size; ++i)
+	{
+		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v->b[i]->id, v->b[i]->title, v->b[i]->author, v->b[i]->year);
+	}
+}
 
 void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n3. Find Book\n0. Exit\n==============\n"); }
 
@@ -100,10 +109,20 @@ bool delete_book(Vector *v, int id)
 			v->size--;
 			v->b[v->size] = NULL;
 
+			if (v->size == 0)
+			{
+				write_to_file(BOOK_STORAGE_FILENAME, "", "w");
+				return true;
+			}
+
+			for (size_t i = 0; i < v->size; ++i)
+			{
+				move_into_storage(v->b[i], i == 0 ? "w" : "a");
+			}
+
 			return true;
 		}
 	}
-	// TODO: Сделать удаление из файла
 
 	return false;
 }
@@ -121,8 +140,8 @@ void create_book_data(Book *b, const char *argv[])
 	strcpy(b->author, argv[2]);
 
 	// =====
-	// Возьми строку из argv[BOOK_YEAR], интерпретируй её как десятичное число, результат положи в year, а указатель на
-	// место остановки преобразования положи в end.
+	// Возьми строку из argv[BOOK_YEAR], интерпретируй её как десятичное число, результат положи в
+	// year, а указатель на место остановки преобразования положи в end.
 	char *end;
 	unsigned long year = strtoul(argv[3], &end, 10);
 	if (*end != '\0')
@@ -168,7 +187,7 @@ bool validate_input(const int *input, Vector *v)
 			abort();
 		}
 
-		move_into_storage(b);
+		move_into_storage(b, "a");
 
 		free(id);
 		break;
@@ -203,15 +222,7 @@ bool validate_input(const int *input, Vector *v)
 	return EXIT_SUCCESS;
 }
 
-void print_data_to_console(const Vector *v)
-{
-	for (size_t i = 0; i < v->size; ++i)
-	{
-		printf("ID: %d | TITLE: %s AUTHOR: %s YEAR: %d\n", v->b[i]->id, v->b[i]->title, v->b[i]->author, v->b[i]->year);
-	}
-}
-
-bool move_into_storage(Book *b)
+bool move_into_storage(Book *b, const char *mode)
 {
 	char buffer[100];
 	int res = snprintf(buffer, sizeof(buffer), "%d;%s;%s;%d;%d", b->id, b->title, b->author, b->year, b->available);
@@ -221,8 +232,7 @@ bool move_into_storage(Book *b)
 		return false;
 	}
 
-	write_to_file(BOOK_STORAGE_FILENAME, buffer);
-	return true;
+	return write_to_file(BOOK_STORAGE_FILENAME, buffer, mode);
 }
 
 bool load_storage(Vector *v)
