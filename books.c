@@ -165,7 +165,7 @@ bool validate_input(const int *input, Vector *v)
 
 		Book *b = malloc(sizeof(Book));
 
-		int id_int = v->size + 1;
+		int id_int = v->b[v->size - 1]->id + 1;
 		int length = snprintf(NULL, 0, "%d", id_int);
 		char *id = malloc(length + 1);
 		snprintf(id, length + 1, "%d", id_int);
