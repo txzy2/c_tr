@@ -92,7 +92,7 @@ bool delete_book(Vector *v, int id)
 		{
 			free(v->b[i]);
 
-			for (size_t j = 0; j < v->size - 1; ++j)
+			for (size_t j = i; j < v->size - 1; ++j)
 			{
 				v->b[j] = v->b[j + 1];
 			}
@@ -103,6 +103,7 @@ bool delete_book(Vector *v, int id)
 			return true;
 		}
 	}
+	// TODO: Сделать удаление из файла
 
 	return false;
 }
