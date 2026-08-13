@@ -13,13 +13,16 @@ void print_data_to_console(const Vector *v)
 
 void print_menu() { printf("\n==== MENU ====\n1. Add Book\n2. Del Book\n0. Exit\n==============\n"); }
 
-void read_input(int *input)
+bool read_input(int *input)
 {
 	if (scanf("%d", input) != 1)
 	{
-		printf("INVALID CHOICE\n");
-		abort();
+		fprintf(stderr, "INVALID CHOICE\n");
+		while (getchar() != '\n')
+			;
+		return false;
 	}
+	return true;
 }
 
 bool vector_init(Vector *v, size_t capacity)
@@ -86,7 +89,7 @@ bool delete_book(Vector *v, int id)
 {
 	if (v == NULL || v->b == NULL || v->size == 0)
 	{
-		abort();
+		return false;
 	}
 
 	for (size_t i = 0; i < v->size; i++)
@@ -125,26 +128,31 @@ void create_book_data(Book *b, const char *argv[])
 {
 	if (b == NULL)
 	{
-		printf("ERROR CREATE BOOK");
+		fprintf(stderr, "ERROR CREATE BOOK\n");
 		abort();
 	}
 
-	b->id = atoi(argv[0]);
+	char *end;
+	unsigned long id_val = strtoul(argv[0], &end, 10);
+	if (*end != '\0')
+	{
+		fprintf(stderr, "Invalid id\n");
+		abort();
+	}
+	b->id = (int)id_val;
+
 	strcpy(b->title, argv[1]);
 	strcpy(b->author, argv[2]);
 
-	// =====
-	// Возьми строку из argv[BOOK_YEAR], интерпретируй её как десятичное число, результат положи в
-	// year, а указатель на место остановки преобразования положи в end.
-	char *end;
-	unsigned long year = strtoul(argv[3], &end, 10);
-	if (*end != '\0')
+	char *end_year;
+	unsigned long year = strtoul(argv[3], &end_year, 10);
+	if (*end_year != '\0')
 	{
 		fprintf(stderr, "Invalid year\n");
 		abort();
 	}
 	b->year = (uint16_t)year;
-	// =====
+
 	b->available = argv[4];
 }
 
@@ -160,12 +168,23 @@ bool validate_input(const int *input, Vector *v)
 		if (scanf("%99s %49s %4s", title, author, year) != 3)
 		{
 			fprintf(stderr, "INVALID INPUT\n");
-			abort();
+			return EXIT_FAILURE;
+		}
+
+		if (strchr(title, ';') || strchr(author, ';'))
+		{
+			fprintf(stderr, "Symbol ';' is not allowed\n");
+			return EXIT_FAILURE;
 		}
 
 		Book *b = malloc(sizeof(Book));
+		if (b == NULL)
+		{
+			fprintf(stderr, "Memory allocation failed\n");
+			return EXIT_FAILURE;
+		}
 
-		int id_int = v->b[v->size - 1]->id + 1;
+		int id_int = (v->size > 0) ? v->b[v->size - 1]->id + 1 : 1;
 		int length = snprintf(NULL, 0, "%d", id_int);
 		char *id = malloc(length + 1);
 		snprintf(id, length + 1, "%d", id_int);
@@ -176,8 +195,9 @@ bool validate_input(const int *input, Vector *v)
 		if (!push_back(v, b))
 		{
 			free(id);
-			free_vec(v);
-			abort();
+			free(b);
+			fprintf(stderr, "Failed to add book\n");
+			return EXIT_FAILURE;
 		}
 
 		move_into_storage(b, "a");
@@ -193,13 +213,13 @@ bool validate_input(const int *input, Vector *v)
 		if (scanf("%d", &id) != 1)
 		{
 			fprintf(stderr, "INVALID ID\n");
-			abort();
+			return EXIT_FAILURE;
 		}
 
 		if (!delete_book(v, id))
 		{
 			fprintf(stderr, "ERROR TO DELETE BOOK\n");
-			abort();
+			return EXIT_FAILURE;
 		}
 		break;
 	}
@@ -220,7 +240,7 @@ bool move_into_storage(Book *b, const char *mode)
 	char buffer[100];
 	int res = snprintf(buffer, sizeof(buffer), "%d;%s;%s;%d;%d", b->id, b->title, b->author, b->year, b->available);
 
-	if (res < 0 || res >= sizeof(buffer))
+	if (res < 0 || (size_t)res >= sizeof(buffer))
 	{
 		return false;
 	}
@@ -252,7 +272,10 @@ bool load_storage(Vector *v)
 
 			const char *arr[] = {id, title, author, year, available};
 			create_book_data(b, arr);
-			push_back(v, b);
+			if (!push_back(v, b))
+			{
+				free(b);
+			}
 		}
 	}
 	fclose(fptr);
@@ -266,20 +289,30 @@ int main()
 
 	vector_init(&v, 1);
 	load_storage(&v);
-	print_data_to_console(&v);
 
-	print_menu();
-	printf("\nINPUT: ");
-	read_input(&input);
-
-	if (validate_input(&input, &v))
+	while (true)
 	{
-		free_vec(&v);
-		abort();
+		print_data_to_console(&v);
+		print_menu();
+		printf("\nINPUT: ");
+
+		if (!read_input(&input))
+		{
+			continue;
+		}
+
+		if (validate_input(&input, &v) && input != 0)
+		{
+			continue;
+		}
+
+		if (input == 0)
+		{
+			break;
+		}
 	}
 
-	print_data_to_console(&v);
-
 	free_vec(&v);
+
 	return EXIT_SUCCESS;
 }
