@@ -42,12 +42,12 @@ bool add_to_end_list(List *list, const int *val)
 	return true;
 }
 
-bool add_to_head_list(List *list, const int *val)
+struct Node *add_to_head_list(List *list, const int *val)
 {
 	struct Node *item = malloc(sizeof(struct Node));
 	if (item == NULL)
 	{
-		return false;
+		return NULL;
 	}
 
 	item->data = *val;
@@ -65,6 +65,40 @@ bool add_to_head_list(List *list, const int *val)
 	}
 	list->size++;
 
+	return item;
+}
+
+bool delete_node(List *list, struct Node *node)
+{
+	if (list == NULL || list->head == NULL || node == NULL)
+	{
+		return false;
+	}
+
+	if (node == list->head)
+	{
+		list->head = node->next;
+
+		if (list->head != NULL)
+		{
+			list->head->prev = NULL;
+		}
+	}
+	else
+	{
+		node->prev->next = node->next;
+
+		if (node->next != NULL)
+		{
+			node->next->prev = node->prev;
+		}
+	}
+
+	node->prev = node->next = 0;
+	node->data = 0;
+	list->size--;
+
+	free(node);
 	return true;
 }
 
@@ -100,11 +134,18 @@ int main()
 	const int val = 5, val2 = 10, val3 = 12;
 
 	add_to_end_list(&l, &val);
-	add_to_head_list(&l, &val2);
+	struct Node *val_item2 = add_to_head_list(&l, &val2);
 	add_to_head_list(&l, &val3);
 
 	print_list_debug(&l);
 
+	if (!delete_node(&l, val_item2))
+	{
+		fprintf(stderr, "ERROR REMOVE");
+		return 1;
+	}
+
+	print_list_debug(&l);
 	free_list(&l);
 	return 0;
 }
