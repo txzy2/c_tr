@@ -9,7 +9,7 @@ int main()
 {
 	printf("Hello World\n");
 
-	if (!write_to_file(FILENAME, "HELLO FROM C"))
+	if (!write_to_file(FILENAME, "HELLO FROM C", "w"))
 	{
 		return -1;
 	}
@@ -34,7 +34,7 @@ int main()
 		pos += snprintf(str_nums + pos, 100 - pos, "%d%s", nums[i], (i < length - 1) ? ", " : "");
 	}
 
-	if (!write_to_file(FILENAME, str_nums))
+	if (!write_to_file(FILENAME, str_nums, "a"))
 	{
 		free(str_nums);
 		return -1;
