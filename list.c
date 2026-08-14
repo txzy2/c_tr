@@ -79,6 +79,21 @@ void print_list_debug(const List *list)
 	}
 }
 
+void free_list(List *list)
+{
+	struct Node *cur = list->head;
+
+	while (cur != NULL)
+	{
+		struct Node *next_node = cur->next;
+		free(cur);
+		cur = next_node;
+	}
+
+	list->head = list->end = NULL;
+	list->size = 0;
+}
+
 int main()
 {
 	List l = {.head = NULL, .end = NULL, .size = 0};
@@ -89,5 +104,7 @@ int main()
 	add_to_head_list(&l, &val3);
 
 	print_list_debug(&l);
+
+	free_list(&l);
 	return 0;
 }
