@@ -101,6 +101,30 @@ bool delete_node(List *list, struct Node *node)
 	return true;
 }
 
+bool delete_first_node(List *list)
+{
+	if (list == NULL || list->head == NULL)
+	{
+		return false;
+	}
+
+	delete_node(list, list->head);
+
+	return true;
+}
+
+bool delete_last_node(List *list)
+{
+	// TODO: Find a first node in cyrcle like (If node haven't got prev)
+	if (list == NULL || list->end == NULL)
+	{
+		return false;
+	}
+
+	delete_node(list, list->end);
+	return true;
+}
+
 void print_list_debug(const List *list)
 {
 	printf("head=%p end=%p size=%d\n", (void *)list->head, (void *)list->end, list->size);
@@ -143,6 +167,7 @@ int main()
 		fprintf(stderr, "ERROR REMOVE");
 		return 1;
 	}
+	delete_first_node(&l);
 
 	print_list_debug(&l);
 	free_list(&l);
