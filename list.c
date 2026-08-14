@@ -1,20 +1,21 @@
+#include "types.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 struct Node
 {
-	int data;
+	i32 data;
 	struct Node *next, *prev;
 };
 
 typedef struct
 {
-	int size;
+	i32 size;
 	struct Node *head, *end;
 } List;
 
-bool add_to_end_list(List *list, const int *val)
+bool add_to_end_list(List *list, const i32 *val)
 {
 	struct Node *item = malloc(sizeof(struct Node));
 	if (item == NULL)
@@ -40,7 +41,7 @@ bool add_to_end_list(List *list, const int *val)
 	return true;
 }
 
-struct Node *add_to_head_list(List *list, const int *val)
+struct Node *add_to_head_list(List *list, const i32 *val)
 {
 	struct Node *item = malloc(sizeof(struct Node));
 	if (item == NULL)
@@ -76,7 +77,6 @@ bool delete_node(List *list, struct Node *node)
 	if (node == list->head)
 	{
 		list->head = node->next;
-
 		if (list->head != NULL)
 		{
 			list->head->prev = NULL;
@@ -85,7 +85,6 @@ bool delete_node(List *list, struct Node *node)
 	else
 	{
 		node->prev->next = node->next;
-
 		if (node->next != NULL)
 		{
 			node->next->prev = node->prev;
@@ -131,7 +130,7 @@ void free_list(List *list)
 int main()
 {
 	List l = {.head = NULL, .end = NULL, .size = 0};
-	const int val = 5, val2 = 10, val3 = 12;
+	const i32 val = 5, val2 = 10, val3 = 12;
 
 	add_to_end_list(&l, &val);
 	struct Node *val_item2 = add_to_head_list(&l, &val2);
