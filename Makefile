@@ -1,4 +1,4 @@
-.PHONY: b-main b-structs b-book b-vector clean
+.PHONY: b-main b-structs b-book b-vector b-list clean
 
 b-main:
 	gcc -Wall -Wextra -std=c17 -o bin/main main.c files.c
@@ -11,6 +11,9 @@ b-book:
 
 b-vector:
 	gcc -Wall -Wextra -std=c17 -o bin/vector vector.c
+
+b-list:
+	gcc -Wall -Wextra -std=c17 -o bin/list list.c
 
 clean:
 	rm -f bin/*
