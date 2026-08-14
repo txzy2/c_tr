@@ -5,15 +5,13 @@
 struct Node
 {
 	int data;
-	struct Node *next;
-	struct Node *prev;
+	struct Node *next, *prev;
 };
 
 typedef struct
 {
-	struct Node *head;
-	struct Node *end;
 	int size;
+	struct Node *head, *end;
 } List;
 
 bool add_to_end_list(List *list, const int *val)
@@ -94,8 +92,10 @@ bool delete_node(List *list, struct Node *node)
 		}
 	}
 
-	node->prev = node->next = 0;
-	node->data = 0;
+	if (node == list->end)
+	{
+		list->end = node->prev;
+	}
 	list->size--;
 
 	free(node);
