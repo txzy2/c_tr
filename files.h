@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define READ_LENGTH 100
 #define FILENAME "./storage/data.txt"
 #define NAMES_FILE "./storage/names.txt"
 #define BOOK_STORAGE_FILENAME "./storage/books.csv"

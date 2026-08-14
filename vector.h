@@ -3,11 +3,14 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define INITIAL_CAPACITY 2
+
+typedef struct
+{
+	int id;
+	char name[50];
+} User;
 
 typedef struct
 {

@@ -1,6 +1,10 @@
 #include "books.h"
 #include "files.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 void print_data_to_console(const Vector *v)
 {
 	for (size_t i = 0; i < v->size; ++i)

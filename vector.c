@@ -1,5 +1,9 @@
 #include "vector.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 bool vector_init(Vector *v, size_t element_size)
 {
 	if (v == NULL || element_size == 0)
@@ -59,6 +63,18 @@ void *vector_get(Vector *v, size_t index)
 	return (char *)v->data + index * v->element_size;
 }
 
+void vector_free(Vector *v)
+{
+	if (v == NULL)
+	{
+		return;
+	}
+
+	free(v->data);
+	v->data = NULL;
+	v->size = v->capacity = v->element_size = 0;
+}
+
 int main()
 {
 	Vector v;
@@ -71,6 +87,21 @@ int main()
 		int *val = vector_get(&v, i);
 		printf("%d\n", *val);
 	}
+
+	vector_free(&v);
+
+	Vector v2;
+	User u = {.id = 1, .name = "Anton"};
+	vector_init(&v2, sizeof(User));
+	vector_push(&v2, &u);
+
+	for (size_t i = 0; i < v2.size; ++i)
+	{
+		User *val = vector_get(&v2, i);
+		printf("id: %d, name: %s\n", val->id, val->name);
+	}
+
+	vector_free(&v2);
 
 	return 0;
 }

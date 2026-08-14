@@ -1,4 +1,5 @@
-
 /.idea
-data.txt
+.vscode/
 bin/
+storage/data.txt
+storage/books.csv

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define READ_LENGTH 100
+
 size_t readFromFileWithArray(const char *filename, char arr[][30])
 {
 	FILE *rf = fopen(filename, "r");

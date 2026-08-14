@@ -177,7 +177,7 @@ int main()
 
 		char buffer[100];
 		snprintf(buffer, sizeof(buffer), "%s (%d years)", u->name, u->age);
-		write_to_file(FILENAME, buffer);
+		write_to_file(FILENAME, buffer, "a");
 	}
 
 	read_from_file(FILENAME);
