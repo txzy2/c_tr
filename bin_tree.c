@@ -35,6 +35,7 @@ void free_tree(Tree *tree);
 int main()
 {
 	i8 result = EXIT_SUCCESS;
+	printf("Hello, World!\n");
 
 	goto cleanup;
 
