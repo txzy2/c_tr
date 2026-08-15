@@ -15,6 +15,9 @@ b-vector:
 b-list:
 	gcc -Wall -Wextra -std=c17 -o bin/list list.c
 
+b-stack:
+	gcc -Wall -Wextra -std=c17 -o bin/stack stack.c
+
 v-main: b-main
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/main
 
@@ -29,6 +32,9 @@ v-vector: b-vector
 
 v-list: b-list
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/list
+
+v-stack: b-stack
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/stack
 
 clean:
 	rm -f bin/*
