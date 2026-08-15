@@ -48,7 +48,25 @@ bool enqueue(Queue *q, const User *user)
 	return true;
 }
 
-bool dequeue(Queue *q, struct Node *node);
+bool dequeue(Queue *q)
+{
+	if (q == NULL || q->head == NULL)
+	{
+		return false;
+	}
+
+	struct Node *cur = q->head;
+	q->head = cur->next;
+
+	if (q->head == NULL)
+	{
+		q->tail = NULL;
+	}
+	free(cur);
+
+	q->size--;
+	return true;
+}
 
 void free_q(Queue *queue)
 {
@@ -114,6 +132,18 @@ int main()
 	{
 		result = EXIT_FAILURE;
 		goto cleanup;
+	}
+
+	print_q(&q);
+
+	for (i32 i = 0; i < 5; i++)
+	{
+
+		if (!dequeue(&q))
+		{
+			result = EXIT_FAILURE;
+			goto cleanup;
+		}
 	}
 
 	print_q(&q);
