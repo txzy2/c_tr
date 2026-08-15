@@ -4,12 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
-{
-	i32 id;
-	char name[256];
-	char email[256];
-} User;
+#include "user.h"
 
 struct Node
 {
@@ -24,7 +19,14 @@ typedef struct
 } Stack;
 
 // Return first el
-User *peek(Stack *stack);
+User *peek(Stack *stack)
+{
+	if (stack == NULL || stack->top == NULL)
+	{
+		return NULL;
+	}
+	return &stack->top->u;
+}
 
 // Add el to top of stack
 bool push(Stack *stack, const User *user)
@@ -49,14 +51,29 @@ bool push(Stack *stack, const User *user)
 }
 
 // Delete el top of the stack
-bool pop(Stack *stack);
+bool pop(Stack *stack)
+{
+	if (stack == NULL || stack->top == NULL)
+	{
+		return false;
+	}
 
-// Is stack empty?
-bool is_empty(Stack *stack);
+	struct Node *cur = stack->top;
+	stack->top = cur->next;
+	free(cur);
+	stack->size--;
+
+	return true;
+}
 
 // Delete stack
 void free_s(Stack *stack)
 {
+	if (stack == NULL)
+	{
+		return;
+	}
+
 	struct Node *cur = stack->top;
 	while (cur != NULL)
 	{
@@ -85,6 +102,7 @@ int main()
 	i8 result = EXIT_SUCCESS;
 
 	User u = {.id = 1, .name = "Anton", .email = "test@test.ru"};
+	User u2 = {.id = 2, .name = "Masha", .email = "masha@masha.ru"};
 	Stack s = {.top = NULL, .size = 0};
 
 	if (!push(&s, &u))
@@ -94,6 +112,15 @@ int main()
 		goto cleanup;
 	}
 
+	if (!push(&s, &u2))
+	{
+		fprintf(stderr, "ERROR TO PUSH\n");
+		result = EXIT_FAILURE;
+		goto cleanup;
+	}
+
+	print_debug(&s);
+	pop(&s);
 	print_debug(&s);
 
 cleanup:

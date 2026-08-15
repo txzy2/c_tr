@@ -1,4 +1,4 @@
-.PHONY: b-main b-structs b-book b-vector b-list v-main v-structs v-book v-vector clean
+.PHONY: b-main b-structs b-book b-vector b-list b-stack b-queue v-main v-structs v-book v-vector v-stack v-queue clean
 
 b-main:
 	gcc -Wall -Wextra -std=c17 -o bin/main main.c files.c
@@ -18,6 +18,9 @@ b-list:
 b-stack:
 	gcc -Wall -Wextra -std=c17 -o bin/stack stack.c
 
+b-queue:
+	gcc -Wall -Wextra -std=c17 -o bin/queue queue.c
+
 v-main: b-main
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/main
 
@@ -35,6 +38,9 @@ v-list: b-list
 
 v-stack: b-stack
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/stack
+
+v-queue:
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./bin/queue
 
 clean:
 	rm -f bin/*
