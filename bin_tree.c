@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//     50
-//    /  \
-//   30    70
-//  / \    / \
-// 20 40  60  80
+/*
+    50
+   /  \
+  30    70
+ / \    / \
+20 40  60  80
+*/
 
 struct Node
 {
@@ -22,7 +24,41 @@ typedef struct
 	struct Node *root;
 } Tree;
 
-bool insert(Tree *tree, i32 value);
+bool insert(Tree *tree, i32 value)
+{
+	if (tree == NULL)
+	{
+		return false;
+	}
+
+	struct Node *node = malloc(sizeof(struct Node));
+	if (node == NULL)
+	{
+		return false;
+	}
+	node->value = value;
+	node->left = node->right = NULL;
+
+	if (tree->root == NULL)
+	{
+		tree->root = node;
+	}
+	else
+	{
+		struct Node *cur = tree->root;
+		while (cur != NULL)
+		{
+			cur = value > cur->value ? cur->right : cur->left;
+
+			if (cur == NULL)
+			{
+				cur = node;
+			}
+		}
+	}
+
+	return true;
+}
 
 bool remove_node(Tree *tree, i32 value);
 

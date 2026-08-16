@@ -105,7 +105,7 @@ bool insert_after(List *list, struct Node *node, const i32 val)
 		// ВНИМАНИЕ: функция объявлена как bool, а тут return NULL.
 		// NULL == 0 == false, так что по факту работает как return false,
 		// но писать надо return false — так корректно и понятно для читателя.
-		return NULL;
+		return false;
 	}
 	item->data = val;
 	item->next = node->next; // забираем себе "хвост" от node
