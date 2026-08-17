@@ -24,6 +24,7 @@ struct Node
 typedef struct
 {
 	struct Node *root;
+	i32 size;
 } Tree;
 
 bool insert(Tree *tree, i32 value)
@@ -51,13 +52,32 @@ bool insert(Tree *tree, i32 value)
 	node->value = value;
 	node->left = node->right = NULL;
 	*cur = node;
+	tree->size++;
 
 	return true;
 }
 
 bool remove_node(Tree *tree, i32 value);
 
-bool search(Tree *tree, i32 value);
+bool search(Tree *tree, i32 value)
+{
+	if (tree == NULL || tree->root == NULL || value <= 0)
+	{
+		return false;
+	}
+
+	struct Node *cur = tree->root;
+	while (cur != NULL)
+	{
+		if (cur->value == value)
+		{
+			return true;
+		}
+		cur = cur->value > value ? cur->left : cur->right;
+	}
+
+	return false;
+}
 
 static void print_node(struct Node *node, const char *prefix, bool is_left)
 {
@@ -91,6 +111,7 @@ void print_tree(Tree *tree)
 		printf("(empty)\n");
 		return;
 	}
+	printf("TREE SIZE: %d -> Root: [%p] %d\n", tree->size, tree->root, tree->root->value);
 	printf("%d\n", tree->root->value);
 
 	char prefix[256] = "";
@@ -127,23 +148,32 @@ void free_tree(Tree *tree)
 	tree->root = NULL;
 }
 
-int main()
+void generate_tree(Tree *tree)
 {
-
-	srand((unsigned int)time(NULL));
-
-	i8 result = EXIT_SUCCESS;
-	printf("Hello, World!\n");
-
-	Tree tree = {.root = NULL};
 	for (i32 i = 0; i < 99; i++)
 	{
-		i32 value = rand() % 100 + 1; // от 1 до 100 включительно
-		insert(&tree, value);
+		i32 value = rand() % 100 + 1;
+		insert(tree, value);
+	}
+}
+
+int main()
+{
+	srand((unsigned int)time(NULL));
+	i8 result = EXIT_SUCCESS;
+
+	Tree tree = {.root = NULL};
+	generate_tree(&tree);
+	print_tree(&tree);
+
+	if (!search(&tree, 55))
+	{
+		printf("NOT FOUND\n");
+		result = EXIT_FAILURE;
+		goto cleanup;
 	}
 
-	print_tree(&tree);
-	goto cleanup;
+	printf("FOUND\n");
 
 cleanup:
 	free_tree(&tree);
