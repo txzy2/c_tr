@@ -33,14 +33,6 @@ bool insert(Tree *tree, i32 value)
 		return false;
 	}
 
-	struct Node *node = malloc(sizeof(struct Node));
-	if (node == NULL)
-	{
-		return false;
-	}
-	node->value = value;
-	node->left = node->right = NULL;
-
 	struct Node **cur = &tree->root;
 	while (*cur != NULL)
 	{
@@ -50,6 +42,14 @@ bool insert(Tree *tree, i32 value)
 		}
 		cur = value > (*cur)->value ? &(*cur)->right : &(*cur)->left;
 	}
+
+	struct Node *node = malloc(sizeof(struct Node));
+	if (node == NULL)
+	{
+		return false;
+	}
+	node->value = value;
+	node->left = node->right = NULL;
 	*cur = node;
 
 	return true;
@@ -143,6 +143,7 @@ int main()
 	}
 
 	print_tree(&tree);
+	goto cleanup;
 
 cleanup:
 	free_tree(&tree);
