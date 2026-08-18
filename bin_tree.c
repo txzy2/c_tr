@@ -57,11 +57,88 @@ bool insert(Tree *tree, i32 value)
 	return true;
 }
 
-bool remove_node(Tree *tree, i32 value);
+bool remove_node(Tree *tree, i32 value)
+{
+	if (tree == NULL)
+	{
+		return false;
+	}
+
+	struct Node *parent = NULL;
+	struct Node *cur = tree->root;
+	while (cur != NULL && cur->value != value)
+	{
+		parent = cur;
+		cur = cur->value > value ? cur->left : cur->right;
+	}
+
+	if (cur == NULL)
+	{
+		return false;
+	}
+
+	if (cur->left == NULL && cur->right == NULL)
+	{
+		if (parent == NULL)
+		{
+			tree->root = NULL;
+		}
+		else if (parent->left == cur)
+		{
+			parent->left = NULL;
+		}
+		else
+		{
+			parent->right = NULL;
+		}
+		free(cur);
+	}
+	else if (cur->left == NULL || cur->right == NULL)
+	{
+		struct Node *child = (cur->left != NULL) ? cur->left : cur->right;
+		if (parent == NULL)
+		{
+			tree->root = child;
+		}
+		else if (parent->left == cur)
+		{
+			parent->left = child;
+		}
+		else
+		{
+			parent->right = child;
+		}
+		free(cur);
+	}
+	else
+	{
+		struct Node *successor_parent = cur;
+		struct Node *successor = cur->right;
+
+		while (successor->left != NULL)
+		{
+			successor_parent = successor;
+			successor = successor->left;
+		}
+
+		cur->value = successor->value;
+		if (successor_parent->left == successor)
+		{
+			successor_parent->left = successor->right;
+		}
+		else
+		{
+			successor_parent->right = successor->right;
+		}
+		free(successor);
+	}
+
+	return true;
+}
 
 bool search(Tree *tree, i32 value)
 {
-	if (tree == NULL || tree->root == NULL || value <= 0)
+	if (tree == NULL || tree->root == NULL)
 	{
 		return false;
 	}
@@ -128,7 +205,15 @@ int main()
 		goto cleanup;
 	}
 
+	if (!remove_node(&tree, val))
+	{
+		printf("%d IS NOT FOUND\n", val);
+		result = EXIT_FAILURE;
+		goto cleanup;
+	}
+
 	printf("FOUND\n");
+	printf("TREE SIZE: %d -> Root: [%p] %d\n", tree.size, tree.root, tree.root->value);
 
 cleanup:
 	free_tree(&tree);
